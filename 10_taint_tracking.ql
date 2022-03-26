@@ -3,23 +3,28 @@ import semmle.code.cpp.dataflow.TaintTracking
 import DataFlow::PathGraph
 
 class NetworkByteSwap extends Expr {
-    NetworkByteSwap() {
-      exists(MacroInvocation mi |
-        mi.getMacroName().regexpMatch("ntoh(s|l|ll)") and
-        this = mi.getExpr()
-      )
-    }
+  NetworkByteSwap() {
+    exists(MacroInvocation mi |
+      mi.getMacroName().regexpMatch("ntoh.*") and this = mi.getExpr()
+    )
   }
+}
 
 class Config extends TaintTracking::Configuration {
-  Config() { this = "NetworkToMemFuncLength" }
+  Config() {
+    this = "NetorkToMemFuncLength"
+  }
 
-  override predicate isSource(DataFlow::Node source) { 
-    exists(NetworkByteSwap nbs |  source.asExpr() = nbs )
-}
+  override predicate isSource(DataFlow::Node source) {
+    exists(NetworkByteSwap nbs | 
+      source.asExpr() = nbs
+    )
+  }
+
   override predicate isSink(DataFlow::Node sink) {
-    exists (FunctionCall fn |
-        fn.getTarget().getName() = "memcpy" and fn.getArgument(2) = sink.asExpr() )
+    exists(FunctionCall fn |
+      fn.getTarget().getName() = "memcpy" and fn.getArgument(2) = sink.asExpr()
+    )
   }
 }
 
