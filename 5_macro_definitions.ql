@@ -1,6 +1,6 @@
 import cpp
 
 from Function f
-where f.getName() = "ntohs|ll|l"
+where f.getName() = "ntohs" or f.getName() = "ntohl" or f.getName() = "ntohll"
 select f,"found it"
 
